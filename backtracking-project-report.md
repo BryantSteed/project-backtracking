@@ -133,7 +133,7 @@ Other than those two differences, this stretch should be a carbon copy of the pr
 
 Gabriel Pochman on 11/17/2025
 
-*Fill me in*
+We talked about the CutTree class and the additional fields in utils. I looked at the CutTree class and the additional metrics inside the utils source file. It seems like the idea here is to see how much of the solution search space was actually covered by the BSSF algorithm. Of course the generic one would cover everything, but BSSF should result in some cuts to narrow down the search space. My plan for implementing the new fields is to use the CutTree class as I go and call the coverage and leaves cut methods at the end to fill out those fields.
 
 ### Cut Tree
 
