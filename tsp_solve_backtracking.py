@@ -65,7 +65,7 @@ def greedy_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
         if timer.time_out():
             return stats
         process_start_node_greedy(edges, num_nodes, path, visited, current_node)
-        global_best_score = add_stat(edges, timer, stats, global_best_score, path)
+        global_best_score = add_stat_greedy(edges, timer, stats, global_best_score, path)
     return stats
 
 def process_start_node_greedy(edges, num_nodes, path, visited, current_node):
@@ -85,7 +85,7 @@ def process_start_node_greedy(edges, num_nodes, path, visited, current_node):
         visited.add(best_node)
         current_node = best_node
 
-def add_stat(edges, timer, stats, global_best_score, path):
+def add_stat_greedy(edges, timer, stats, global_best_score, path):
     if len(path) != len(edges):
         return global_best_score
     cost = score_tour(path, edges)
@@ -102,10 +102,44 @@ def add_stat(edges, timer, stats, global_best_score, path):
         stats.append(stat)
     return global_best_score
 
-
 def backtracking(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
+    stats = []
+    stack = [[0]]
+    global_best_score = math.inf
+    while stack and not timer.time_out():
+        path = stack.pop()
+        child_paths = expand_path(edges, path)
+        for child_path in child_paths:
+            global_best_score = vet_child_path_backtracking(edges, stats, stack, 
+                                                            child_path, global_best_score, timer)
+    return stats
+
+def vet_child_path_backtracking(edges, stats, stack, child_path, global_best_score, timer) -> int:
+    if len(child_path) == len(edges):
+        cost = score_tour(child_path, edges)
+        if cost < global_best_score:
+            global_best_score = cost
+            stat: SolutionStats = SolutionStats(tour=child_path,
+                                               score=cost,
+                                               time=timer.time(),
+                                               max_queue_size=0,
+                                               n_nodes_expanded=0,
+                                               n_nodes_pruned=0,
+                                               n_leaves_covered=0,
+                                               fraction_leaves_covered=0.0)
+            stats.append(stat)
+    else:
+        stack.append(child_path)
+    return global_best_score
+
+def expand_path(edges: list[list[float]], path: Tour) -> list[Tour]:
+    child_paths = []
+    for node in range(len(edges)):
+        if node not in path and not math.isinf(edges[path[-1]][node]):
+            new_path = path + [node]
+            child_paths.append(new_path)
+    return child_paths
 
 def backtracking_bssf(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
-
+    stats = []
+    return stats
