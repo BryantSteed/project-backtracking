@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 from utils import Tour, SolutionStats, Timer, score_tour, Solver
 from cuttree import CutTree
@@ -54,7 +55,49 @@ def random_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
 
 
 def greedy_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
+    num_nodes = len(edges[0])
+    stats = []
+    global_best_score = math.inf
+    for start_node in range(num_nodes):
+        path = [start_node]
+        visited = set([start_node])
+        current_node = start_node
+        while len(visited) < num_nodes:
+            if timer.time_out():
+                return stats
+            valid_nodes = set()
+            for node in range(num_nodes):
+                if node not in visited and not math.isinf(edges[current_node][node]):
+                    valid_nodes.add(node)
+            if not valid_nodes:
+                break
+            curr_min = math.inf
+            for node in valid_nodes:
+                if edges[current_node][node] < curr_min:
+                    curr_min = edges[current_node][node]
+                    best_node = node
+            path.append(best_node)
+            visited.add(best_node)
+            current_node = best_node
+        global_best_score = add_stat(edges, timer, stats, global_best_score, path)
+    return stats
+
+def add_stat(edges, timer, stats, global_best_score, path):
+    if len(path) != len(edges):
+        return global_best_score
+    cost = score_tour(path, edges)
+    if cost < global_best_score:
+        global_best_score = cost
+        stat: SolutionStats = SolutionStats(tour=path,
+                                               score=cost,
+                                               time=timer.time(),
+                                               max_queue_size=0,
+                                               n_nodes_expanded=0,
+                                               n_nodes_pruned=0,
+                                               n_leaves_covered=0,
+                                               fraction_leaves_covered=0.0)
+        stats.append(stat)
+    return global_best_score
 
 
 def backtracking(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
