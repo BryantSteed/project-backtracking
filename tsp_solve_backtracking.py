@@ -62,25 +62,28 @@ def greedy_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
         path = [start_node]
         visited = set([start_node])
         current_node = start_node
-        while len(visited) < num_nodes:
-            if timer.time_out():
-                return stats
-            valid_nodes = set()
-            for node in range(num_nodes):
-                if node not in visited and not math.isinf(edges[current_node][node]):
-                    valid_nodes.add(node)
-            if not valid_nodes:
-                break
-            curr_min = math.inf
-            for node in valid_nodes:
-                if edges[current_node][node] < curr_min:
-                    curr_min = edges[current_node][node]
-                    best_node = node
-            path.append(best_node)
-            visited.add(best_node)
-            current_node = best_node
+        if timer.time_out():
+            return stats
+        process_start_node_greedy(edges, num_nodes, path, visited, current_node)
         global_best_score = add_stat(edges, timer, stats, global_best_score, path)
     return stats
+
+def process_start_node_greedy(edges, num_nodes, path, visited, current_node):
+    while len(visited) < num_nodes:
+        valid_nodes = set()
+        for node in range(num_nodes):
+            if node not in visited and not math.isinf(edges[current_node][node]):
+                valid_nodes.add(node)
+        if not valid_nodes:
+            break
+        curr_min = math.inf
+        for node in valid_nodes:
+            if edges[current_node][node] < curr_min:
+                curr_min = edges[current_node][node]
+                best_node = node
+        path.append(best_node)
+        visited.add(best_node)
+        current_node = best_node
 
 def add_stat(edges, timer, stats, global_best_score, path):
     if len(path) != len(edges):
