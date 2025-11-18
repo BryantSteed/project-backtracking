@@ -2,13 +2,17 @@ from typing import List, Tuple, Callable
 import time, math, matplotlib.pyplot as plt
 from pathlib import Path
 
-def compute_runtimes(sizes: List[int], func) -> List[float]:
+def compute_runtimes(sizes: List[int], func: Callable[[int], bool]) -> List[float]:
     runtimes = []
+    realized_sizes = []
     for size in sizes:
         start_time = time.perf_counter()
-        func(size)
+        succeeded = func(size)
         end_time = time.perf_counter()
-        runtimes.append((end_time - start_time) * 1000)  # Convert to milliseconds
+        if succeeded:
+            realized_sizes.append(size)
+            runtimes.append((end_time - start_time) * 1000)  # Convert to milliseconds
+    sizes[:] = realized_sizes  # Update sizes to only those that succeeded
     return runtimes
 
 def compute_constants(sizes: List[int], runtimes: List[float], theoretical: Callable[[int], float]) -> List[float]:
@@ -21,8 +25,12 @@ def compute_constants(sizes: List[int], runtimes: List[float], theoretical: Call
 def average_constant(constants: List[float]) -> float:
     return sum(constants) / len(constants) if constants else 0.0
 
-def run_analysis(sizes: List[int], func: Callable):
-    runtimes = compute_runtimes(sizes, func)
+def run_analysis(sizes: List[int], func: Callable[[int], bool]):
+    """Runs performance analysis on the given function over specified input sizes.
+    The function `func` should accept an integer size and return True if it completed successfully.
+    It will mutate the sizes list to only include sizes for which the function succeeded. Similarly,
+    the runtimes list will only include runtimes for successful sizes."""
+    runtimes = compute_runtimes(sizes, func) # Mutates to only successful ones
 
     theoretical_funcs: List[Tuple[Callable[[int], float], str]] = get_theoretical_funcs()
     avg_constants = []
@@ -75,13 +83,15 @@ def generate_save_path(label):
 
 def get_theoretical_funcs() -> List[Tuple[Callable[[int], float], str]]:
     funcs = [
-        (lambda n: 1, "O(1)"),
-        (lambda n: math.log(n), "O(log n)"),
-        (lambda n: n, "O(n)"),
-        (lambda n: n * math.log(n), "O(n log n)"),
-        (lambda n: pow(n, 2), "O(n^2)"),
-        (lambda n: pow(n, 3), "O(n^3)"),
-        # (lambda n: pow(2, n), "O(2^n)"),
-        # (lambda n: math.factorial(n) * pow(n, 2), "O(n! * n^2)"),
+        # (lambda n: 1, "O(1)"),
+        # (lambda n: math.log(n), "O(log n)"),
+        # (lambda n: n, "O(n)"),
+        # (lambda n: n * math.log(n), "O(n log n)"),
+        # (lambda n: pow(n, 2), "O(n^2)"),
+        # (lambda n: pow(n, 3), "O(n^3)"),
+        (lambda n: pow(2, n), "O(2^n)"),
+        # (lambda n : pow(2,n) * (n**2), "O(2^n * n^2)"),
+        (lambda n: math.factorial(n), "O(n!)"),
+        (lambda n: math.factorial(n) * pow(n, 2), "O(n! * n^2)"),
     ]
     return funcs

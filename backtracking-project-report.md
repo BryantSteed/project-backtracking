@@ -314,25 +314,37 @@ Overall, we see that the driving factor in space complexity is the polynomial se
 
 | N   | reduction | time (ms) |
 |-----|-----------|-----------|
-| 5   | 0         |           |
-| 10  | 0         |           |
-| 15  | 0         |           |
-| 20  | 0         |           |
-| 25  | 0         |           |
-| 30  | 0         |           |
-| 35  | 0         |           |
-| 40  | 0         |           |
-| 45  | 0         |           |
-| 50  | 0         |           |
+| 5   | 0         |    0.22   |
+| 10  | 0         |   1556.17 |
+| 15  | 0         |    >60000 |
+| 20  | 0         |    >60000 |
+| 25  | 0         |    >60000 |
+| 30  | 0         |    >60000 |
+| 35  | 0         |    >60000 |
+| 40  | 0         |    >60000 |
+| 45  | 0         |    >60000 |
+| 50  | 0         |    >60000 |
 
 ### Comparison of Theoretical and Empirical Results - Backtracking
 
-- Theoretical order of growth: 
-- Empirical order of growth (if different from theoretical): 
+- Theoretical order of growth: **O(n! * n^2)**
+- Empirical order of growth (if different from theoretical): **O(2^n)**
+
+[img](core_empirical.png)
+
+As you can see, my theoretical runtime of n! * n^2 was astronomically off. The lack of data meant that the constant comparison was all over the place because there were only two data points. The empirical data was closer to the O(2^n) order.
+
+The main reason for this, in my opinion, is the lack of data. Its really difficult to draw a conclusion from only two runtimes. However, assuming that this is the case, there's a perfectly plausible reason why. In my analysis for the top level backtracking, I assumed the worst case, which would be that there were no infinities in the graph. 
+
+My understanding of the graph generation algorithm (assuming that it's consistent with the test cases) is that there may be edges with infinite weight. This dramatically decreases the search space because you don't need to expand to all (partial state number - 1) more partial state on each stack popping. This seems to be the most plausible reason why my theoretical didn't match the empirical data.
 
 ### Greedy v Backtracking
 
-*Fill me in*
+[img](greedy_vs_backtracking.png)
+
+I log transformed the data here to be able to see variation easier. With that, you can easily see that the greedy algorithm performs **substantially** faster than the backtracking algorithm.
+
+The main difference between the two algorithms that I notice is the number of states that they expand to search. It's clear that the number of searched states increases exponentially (perhaps even more) as the input size increases. However, because the greedy algorithm does not search all possible states, it fares far better in such a comparison because its search space growth is polynomial.
 
 ### Water Bottle Scenario 
 
@@ -340,19 +352,21 @@ Overall, we see that the driving factor in space complexity is the polynomial se
 
 **Algorithm:** 
 
-*Fill me in*
+I would use the BSSF algorithm from stretch 1. This is because my Boss said that he needs an optimal solution, so greedy will not suffice. I feel like the regular backtracking wouldn't make sense because it wastes time exploring paths that don't need to be explored. To the contrary, BSSF only explores paths that are not already sub-optimal. There isn't a need to modify BSSF, it should work just fine.
 
 #### Scenario 2
 
 **Algorithm:** 
 
-*Fill me in*
+Because the Boss said that time was more important than accuracy, I would choose the greedy algorithm. This will produce a reasonable solution in a polynomial-scaled amount of time. Because only 40 percent of the edges are actually present, I would move to have the graph represented as adjacency list to save on memory and the time to compute the minimum edge. This because with the matrix, you are required to iterate over all the infinity weight edges, which is inefficient.
 
 #### Scenario 2
 
 **Algorithm:** 
 
-*Fill me in*
+I'm going to assume that was supposed to say scenario 3. Because my Boss wants the best solution, I would use BSSF. There still isn't a good reason to choose the generic brute force backtracking algorithm because it explores unnecessary paths.
+
+I would modify the algorithm by representing the graph as an adjacency list instead of a matrix because there are only 10% of the edges. This will greatly reduce both the space complexity and the time it takes to compute the expansion.
 
 
 ## Stretch 1
