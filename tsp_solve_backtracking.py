@@ -141,5 +141,31 @@ def expand_path(edges: list[list[float]], path: Tour) -> list[Tour]:
     return child_paths
 
 def backtracking_bssf(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
+    global_best_score = greedy_tour(edges, timer)[0].score
     stats = []
+    stack = [[0]]
+    while stack and not timer.time_out():
+        path = stack.pop()
+        child_paths = expand_path(edges, path)
+        for child_path in child_paths:
+            global_best_score = vet_child_path_bssf(edges, stats, stack, 
+                                                    child_path, global_best_score, timer)
     return stats
+
+def vet_child_path_bssf(edges, stats, stack, child_path, global_best_score, timer) -> int:
+    cost = score_tour(child_path, edges)
+    if len(child_path) == len(edges):
+        if cost < global_best_score:
+            global_best_score = cost
+            stat: SolutionStats = SolutionStats(tour=child_path,
+                                               score=cost,
+                                               time=timer.time(),
+                                               max_queue_size=0,
+                                               n_nodes_expanded=0,
+                                               n_nodes_pruned=0,
+                                               n_leaves_covered=0,
+                                               fraction_leaves_covered=0.0)
+            stats.append(stat)
+    elif cost < global_best_score:
+        stack.append(child_path)
+    return global_best_score
