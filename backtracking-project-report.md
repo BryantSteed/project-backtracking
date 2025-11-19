@@ -381,17 +381,22 @@ Other than those two differences, this stretch should be a carbon copy of the pr
 
 ### Demonstrate BSSF Backtracking Works Better than No-BSSF Backtracking 
 
-*Fill me in*
+For Size = 10, Seed = 200, Time limit = 60 seconds, Optimal Score = 2.806
+
+Backtracking arrives at the optimal solution in 0.906715 seconds
+BSSF arrives at the optimal solution in 0.045704 seconds
 
 ### BSSF Backtracking v Backtracking Complexity Differences
 
-*Fill me in*
+Its clear that BSSF likely has a better average case time complexity that Backtracking. However, I'm not entirely sure that we can say that their worst case time complexities are necessarily different. If there exists a graph (at every possible size) that will result in the BFFS algorithm never having enough information to prune a part of the search space, then their worst case Big O time complexities should be the same.
+
+Because of this, my theoretical complexity from Backtracking to Backtracking BFFS has not changed because we are dealing with this worst case. If, however, someone could prove that you will always be able to prune a certain portion of a particular graph traversal tree in such a way that would impact Big O, then I would be convinced.
 
 ### Time v Solution Cost
 
-![Plot]()
+![Plot](time_vs_score.png)
 
-*Fill me in*
+This analysis was run for nodes = 15 for 60 seconds each. These results are quite surprising to me. As you can see, the BFFS algorithm appears to be winning the time vs score ratio over 2 of the algorithms. Its interesting how the randomization and and backtracking seem to be at a standstill for quite some time. Oddly, The greedy algorithm performed amazingly well. It arrived at a very good solution faster than any of the other algorithms. It seems that using the greedy algorithm will get far better results faster than any of the other algorithms could.
 
 ## Stretch 2
 
