@@ -75,13 +75,13 @@ if __name__ == '__main__':
 
     main(
         15,
-        # random_tour,
-        # greedy_tour,
-        # backtracking,
-        # backtracking_bssf,
+        random_tour,
+        greedy_tour,
+        backtracking,
+        backtracking_bssf,
         euclidean=True,
-        reduction=0.2,
+        reduction=0.0,
         normal=False,
-        seed=4321,
-        timeout=10
+        seed=42,
+        timeout=15
     )

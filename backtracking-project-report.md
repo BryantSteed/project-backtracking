@@ -414,7 +414,23 @@ The cut function works by finding the terminal node in the graph by walking its 
 
 ### Plots 
 
-*Fill me in*
+I ran my testing here with variable time limits to see how effectively both algorithms would utilize the search space. Note that the first three times yielding nothing for BSSF because it was unable to find something better than the greedy solution in that time. Also note that some solutions are the same for certain time intervals because the expansion evaluation process often took more than 5 seconds as you got up there.
+
+[img](fraction_covered.png)
+
+As you can see, the tree coverage was significantly higher for the BFFS algorithm. Note that the jump is likely artificial because BFFS didn't get a better result than greedy in the first three. The fine print coverage fraction actually for backtracking had the coverage at less than a percent! It goes to show that pruning the search space make the search move a lot faster.
+
+[img](max_queue.png)
+
+We see what we would expect to see here. The backtracking had substantially more partial states active at a time because it was not pruning off fruitless ones. It shows that the brute force of pure backtracking results in substantial overheads with storing partial states.
+
+[img](nodes_expanded.png)
+
+This is also what we would expect. It shows that backtracking resulted in substantially more expansions. This is likely because the time that backtracking spent expanding into more states was spent by BFFS to prune nodes and explore new paths. It's interesting how more expansion does not equal more coverage.
+
+[img](nodes_pruned.png)
+
+Here we see the obvious. The backtracking algorithm does not prune nodes. To the contrary, the BFFS algorithm does. This is precisely why we see the discrepancies between the two in the other graph. BFFS pruned around 2.5 million nodes that the backtracking algorithm would have had to fully expand. Here we see why pruning is a practical necessity.
 
 ## Project Review
 
