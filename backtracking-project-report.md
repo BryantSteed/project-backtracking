@@ -408,7 +408,9 @@ We talked about the CutTree class and the additional fields in utils. I looked a
 
 ### Cut Tree
 
-*Fill me in*
+The CutTree class takes the number of Nodes in the TSP graph. Then you can call cut on it. What that does is, it determines the number of leaves that were cut (or covered) by nature of the path you have chosen. The CutTree class assumes that we are doing a Depth First Search style thing. The interesting thing to see here would be if BFFS is able to cut more leaves in a shorter amount of time than Backtracking. If so, it would prove that BFFS covers (cuts) the search space more efficiently.
+
+The cut function works by finding the terminal node in the graph by walking its way down the path you supply it. It then compute the number of leaves cut by using the factorial. It then updates all the leaves with how many were cut at this path modification. It's a really cool class that lets you quantify the extent of your graph traversal.
 
 ### Plots 
 

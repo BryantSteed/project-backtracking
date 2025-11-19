@@ -4,6 +4,7 @@ import numpy as np
 
 from utils import Tour, SolutionStats, Timer, score_tour, Solver
 from cuttree import CutTree
+from typing import Tuple
 
 
 def random_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
@@ -142,30 +143,50 @@ def expand_path(edges: list[list[float]], path: Tour) -> list[Tour]:
 
 def backtracking_bssf(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
     global_best_score = greedy_tour(edges, timer)[0].score
+    max_stack_size = 1
+    total_partial_states = 1
+    total_partial_states_pruned = 0
+    cut_tree = CutTree(len(edges))
     stats = []
     stack = [[0]]
     while stack and not timer.time_out():
         path = stack.pop()
         child_paths = expand_path(edges, path)
+        total_partial_states += len(child_paths)
         for child_path in child_paths:
-            global_best_score = vet_child_path_bssf(edges, stats, stack, 
-                                                    child_path, global_best_score, timer)
+            global_best_score, max_stack_size, total_partial_states_pruned, total_partial_states \
+                                 = vet_child_path_bssf(edges, stats, stack, 
+                                                       child_path, global_best_score, 
+                                                       timer, max_stack_size, total_partial_states_pruned, 
+                                                       total_partial_states, cut_tree)
     return stats
 
-def vet_child_path_bssf(edges, stats, stack, child_path, global_best_score, timer) -> int:
+def vet_child_path_bssf(edges, stats, stack, child_path, 
+                        global_best_score, timer, max_stack_size, 
+                        total_partial_states_pruned, total_partial_states, cut_tree) -> Tuple[int, int, int, int]:
     cost = score_tour(child_path, edges)
     if len(child_path) == len(edges):
         if cost < global_best_score:
             global_best_score = cost
+
+            cut_tree.cut(child_path)
+            total_cut = cut_tree.n_leaves_cut()
+            fraction_cut = cut_tree.fraction_leaves_covered()
+
+
             stat: SolutionStats = SolutionStats(tour=child_path,
                                                score=cost,
                                                time=timer.time(),
-                                               max_queue_size=0,
-                                               n_nodes_expanded=0,
-                                               n_nodes_pruned=0,
-                                               n_leaves_covered=0,
-                                               fraction_leaves_covered=0.0)
+                                               max_queue_size=max_stack_size,
+                                               n_nodes_expanded= total_partial_states,
+                                               n_nodes_pruned= total_partial_states_pruned,
+                                               n_leaves_covered= total_cut,
+                                               fraction_leaves_covered=fraction_cut)
             stats.append(stat)
     elif cost < global_best_score:
         stack.append(child_path)
-    return global_best_score
+        max_stack_size = max(max_stack_size, len(stack))
+    else:
+        cut_tree.cut(child_path)
+        total_partial_states_pruned += 1
+    return global_best_score, max_stack_size, total_partial_states_pruned, total_partial_states
