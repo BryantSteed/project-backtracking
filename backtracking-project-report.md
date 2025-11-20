@@ -164,15 +164,15 @@ To sum up. The dominating factor for space complexity here is the edges adjacenc
 - Theoretical order of growth: **O(n^3)**
 - Empirical order of growth (if different from theoretical): **O(n^2)**
 
-[img](baseline_constants_theoretical.png)
+![img](baseline_constants_theoretical.png)
 
 As you can see, the theoretical constants were very inconsistent.
 
-[img](baseline_constants_empirical.png)
+![img](baseline_constants_empirical.png)
 
 However, the constants for quadratic time fit the empirical data much better
 
-[img](baseline_empirical.png)
+![img](baseline_empirical.png)
 
 According to this, you see that the empirical nearly perfectly follows quadratic time. I'm not sure why the theoretical of O(n^3) was incorrect in favor of O(n^2) here. One theory that I have is the process_start_node_greedy function. It effectively operates on a double nested for loop in the worst case.
 
@@ -330,7 +330,7 @@ Overall, we see that the driving factor in space complexity is the polynomial se
 - Theoretical order of growth: **O(n! * n^2)**
 - Empirical order of growth (if different from theoretical): **O(2^n)**
 
-[img](core_empirical.png)
+![img](core_empirical.png)
 
 As you can see, my theoretical runtime of n! * n^2 was astronomically off. The lack of data meant that the constant comparison was all over the place because there were only two data points. The empirical data was closer to the O(2^n) order.
 
@@ -340,7 +340,7 @@ My understanding of the graph generation algorithm (assuming that it's consisten
 
 ### Greedy v Backtracking
 
-[img](greedy_vs_backtracking.png)
+![img](greedy_vs_backtracking.png)
 
 I log transformed the data here to be able to see variation easier. With that, you can easily see that the greedy algorithm performs **substantially** faster than the backtracking algorithm.
 
@@ -416,22 +416,30 @@ The cut function works by finding the terminal node in the graph by walking its 
 
 I ran my testing here with variable time limits to see how effectively both algorithms would utilize the search space. Note that the first three times yielding nothing for BSSF because it was unable to find something better than the greedy solution in that time. Also note that some solutions are the same for certain time intervals because the expansion evaluation process often took more than 5 seconds as you got up there.
 
-[img](fraction_covered.png)
+![img](fraction_covered.png)
 
 As you can see, the tree coverage was significantly higher for the BFFS algorithm. Note that the jump is likely artificial because BFFS didn't get a better result than greedy in the first three. The fine print coverage fraction actually for backtracking had the coverage at less than a percent! It goes to show that pruning the search space make the search move a lot faster.
 
-[img](max_queue.png)
+![img](max_queue.png)
 
 We see what we would expect to see here. The backtracking had substantially more partial states active at a time because it was not pruning off fruitless ones. It shows that the brute force of pure backtracking results in substantial overheads with storing partial states.
 
-[img](nodes_expanded.png)
+![img](nodes_expanded.png)
 
 This is also what we would expect. It shows that backtracking resulted in substantially more expansions. This is likely because the time that backtracking spent expanding into more states was spent by BFFS to prune nodes and explore new paths. It's interesting how more expansion does not equal more coverage.
 
-[img](nodes_pruned.png)
+![img](nodes_pruned.png)
 
 Here we see the obvious. The backtracking algorithm does not prune nodes. To the contrary, the BFFS algorithm does. This is precisely why we see the discrepancies between the two in the other graph. BFFS pruned around 2.5 million nodes that the backtracking algorithm would have had to fully expand. Here we see why pruning is a practical necessity.
 
 ## Project Review
 
-*Fill me in*
+Gabriel Pochman and Sam Bills on 11/19/2025
+
+For Baseline, we all got similar theoretical orders (cubic). However, we all saw that the empirical time complexity was n^2. We all weren't sure as to why there was this discrepancy in the theoretical order vs the actual order. They had some theories that it was due to lower level optimizations in the actual computer processor.
+
+For Core, we all got some variation of O(n!) for the theoretical. For them, they also got O(n!) in the empirical, but I was the only one got got O(2^n) for that. I wasn't sure why this was the case, but it could be because we all only had like two data points.
+
+For stretch 1, we implemented BFFS in similar ways. We saw that backtracking generally had the lowest efficiency in terms of solution quality per second the algorithm was running. For stretch 2, we also saw that BFFS was able to provide more coverage on the tree than backtracking. This makes sense because it searches the space more effectively.
+
+All in all, this was a really cool project. I enjoyed learning about these different algorithms and seeing how difficult TSP is to solve efficiently.
